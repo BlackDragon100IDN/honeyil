@@ -1,21 +1,20 @@
 nohup bash -c '
+set -e
 export DEBIAN_FRONTEND=noninteractive
 
+# force IPv4 (anti timeout)
 echo "Acquire::ForceIPv4 \"true\";" > /etc/apt/apt.conf.d/99force-ipv4
-rm -f /etc/apt/sources.list.d/mobian.list /etc/apt/trusted.gpg.d/mobian.gpg || true
 
+# update
 apt update -y
-apt install -y ca-certificates curl docker.io docker-compose
 
+# base deps
+apt install -y ca-certificates curl gnupg lsb-release
+
+# docker
+apt install -y docker.io docker-compose
+
+# enable docker
 systemctl enable docker
 systemctl start docker
-
-cd /opt
-rm -rf honeyil
-mkdir honeyil
-cd honeyil
-
-curl -fsSL https://raw.githubusercontent.com/BlackDragon100IDN/honeyil/main/instal.sh -o instal.sh
-chmod +x instal.sh
-./instal.sh
-' > /root/honeyil.log 2>&1 &
+' > /root/docker-install.log 2>&1 &
